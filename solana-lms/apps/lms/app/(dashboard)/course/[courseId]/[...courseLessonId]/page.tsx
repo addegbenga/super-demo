@@ -1,31 +1,3 @@
-// import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-// import SingleCourse from "@/components/course/single-course";
-// import { getQueryClient } from "@/components/providers/query-client";
-// import { courseQueries } from "@/lib/queries";
-
-// export default async function CoursePage({
-//   params,
-//   searchParams,
-// }: {
-//   params: Promise<{ [key: string]: string }>;
-//   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-// }) {
-//   const resolvedParams = await params;
-//   const resolvedSearchParams = await searchParams;
-//   const queryClient = getQueryClient();
-//   const language = resolvedSearchParams.lang as string;
-//   const courseId = resolvedParams.courseId as string;
-
-
-//   // Prefetch on server
-//   await queryClient.prefetchQuery(courseQueries.bySlug(courseId, language));
-
-//   return (
-//     <HydrationBoundary state={dehydrate(queryClient)}>
-//       <SingleCourse/>
-//     </HydrationBoundary>
-//   );
-// }
 
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import SingleCourse from "@/components/course/single-course";
@@ -45,7 +17,7 @@ export default async function CoursePage({
   const queryClient = getQueryClient();
   const language = resolvedSearchParams.lang as string;
   const courseId = resolvedParams.courseId as string;
-  const lessonSlug = resolvedParams.courseLessonId?.[0] as string; // whatever your param is named
+  const lessonSlug = resolvedParams.courseLessonId?.[0] as string;
 
   // ✅ Parallel prefetch - both fire at the same time
   await Promise.all([

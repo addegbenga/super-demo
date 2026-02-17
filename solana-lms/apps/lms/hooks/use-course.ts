@@ -75,14 +75,14 @@ export function useCourse(slug: string) {
   // Lesson completion mutation
   // Server Action updates Sanity progress, onSuccess updates localStorage
   const completeLessonMutation = useMutation({
-    mutationFn: async (lessonIndex: number) => {
+    mutationFn: async (lessonId: string) => {
       if (!userId || !course) {
         throw new Error("User and course are required");
       }
-      return completeLesson({ userId, courseId: course._id, lessonIndex });
+      return completeLesson({ userId, courseId: course._id, lessonId });
     },
 
-    onSuccess: async (result, lessonIndex) => {
+    onSuccess: async (result, lessonId) => {
       if (!result.success) {
         toast.error(result.error ?? "Failed to save progress");
         return;
@@ -91,8 +91,9 @@ export function useCourse(slug: string) {
       // Client-side: update localStorage, XP, streak, achievements
       const lessonResult = await learningService.completeLesson({
         userId,
+                lessonId,
         courseId: course!._id,
-        lessonIndex,
+
       });
 
       // If course is now complete, update Sanity via Server Action

@@ -11,7 +11,7 @@ type EnrollPayload = {
 type CompleteLessonPayload = {
   userId: string;
   courseId: string;
-  lessonIndex: number;
+  lessonId: string;
 };
 
 // Handles the server-side half of enrollment.
@@ -53,7 +53,7 @@ export async function enrollInCourse({ courseId, userId }: EnrollPayload) {
 export async function completeLesson({
   courseId,
   userId,
-  lessonIndex,
+lessonId,
 }: CompleteLessonPayload) {
   try {
     const response = await fetch(
@@ -64,7 +64,7 @@ export async function completeLesson({
         body: JSON.stringify({
           courseId,
           userId,
-          lessonId: lessonIndex.toString(),
+          lessonId: lessonId,
         }),
       },
     );

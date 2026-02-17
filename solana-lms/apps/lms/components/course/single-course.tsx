@@ -7,8 +7,11 @@ import {
   Trophy,
   Terminal,
   Code,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -32,7 +35,28 @@ import { Lesson, Module } from "@workspace/sanity-client";
    TYPES
 ===================================================== */
 
+interface FlatLesson {
+  id: string; // lesson._id — stable identifier stored in completedLessons
+  slug: string;
+  title: string;
+}
+
+interface LessonNavigation {
+  currentId: string;
+  prev: FlatLesson | null;
+  next: FlatLesson | null;
+  isCurrentCompleted: boolean;
+}
+
 interface LayoutProps {
+  courseId: string;
+  lessonSlug: string;
+  language: string;
+  nav: LessonNavigation;
+  onNext: () => void;
+  allLessons: FlatLesson[];
+  completedLessons: string[];
+  completionPercentage: number;
   showCodeEditor: boolean;
   setShowCodeEditor: React.Dispatch<React.SetStateAction<boolean>>;
   isRunning: boolean;
@@ -41,7 +65,7 @@ interface LayoutProps {
 }
 
 /* =====================================================
-   BUSINESS LOGIC
+   BUSINESS LOGIC — code runner
 ===================================================== */
 
 function useCourseRunner() {
@@ -69,9 +93,7 @@ function useCourseRunner() {
         "  Program log: Hello Solana!",
         "  Program consumed: 1240 compute units",
       ]);
-
       setIsRunning(false);
-
       toast("Success!", {
         description: "Program deployed and executed successfully +50 XP",
       });
@@ -82,15 +104,86 @@ function useCourseRunner() {
 }
 
 /* =====================================================
-   SMART CONTAINER
+   HELPERS
+===================================================== */
+
+/** Flatten all lessons across modules into a single ordered list */
+function flattenLessons(
+  modules: Array<Omit<Module, "lessons"> & { lessons: Lesson[] }>,
+): FlatLesson[] {
+  return (modules ?? []).flatMap((mod) =>
+    (mod.lessons ?? []).map((lesson) => ({
+      id: lesson._id,
+      slug: lesson.slug?.current as string,
+      title: lesson.title as string,
+    })),
+  );
+}
+
+/* =====================================================
+   SMART CONTAINER — single place where params are read
 ===================================================== */
 
 export default function Course() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const courseId = params.courseId as string;
+  const lessonSlug = params.courseLessonId?.[0] as string;
+  const language = searchParams.get("lang") as string;
+  const userId = "1234";
+
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const { isRunning, consoleOutput, runCode } = useCourseRunner();
 
+  const { data: course } = useQuery(courseQueries.bySlug(courseId, language));
+  const { data: progress } = useQuery(progressQueries.course(userId, courseId));
+
+  const modules = course?.modules as unknown as Array<
+    Omit<Module, "lessons"> & { lessons: Lesson[] }
+  >;
+
+  const allLessons = flattenLessons(modules ?? []);
+  const currentLesson = allLessons.find((l) => l.slug === lessonSlug);
+  const currentIndex = currentLesson ? allLessons.indexOf(currentLesson) : -1;
+
+  const completedLessons: string[] = progress?.completedLessons ?? [];
+  const completionPercentage = progress?.completionPercentage ?? 0;
+
+  const nav: any = {
+    currentId: currentLesson?.id ?? "",
+    prev: currentIndex > 0 ? allLessons[currentIndex - 1] : null,
+    next:
+      currentIndex !== -1 && currentIndex < allLessons.length - 1
+        ? allLessons[currentIndex + 1]
+        : null,
+    isCurrentCompleted: currentLesson
+      ? completedLessons.includes(currentLesson.id)
+      : false,
+  };
+
+  const handleNext = () => {
+    if (!nav.isCurrentCompleted && currentLesson) {
+      // TODO: call your mutation here, e.g.:
+      // markLessonComplete({ userId, courseId, lessonId: currentLesson.id })
+    }
+
+    if (nav.next) {
+      router.push(`${nav.next.slug}`);
+    }
+  };
+
   return (
     <CourseLayout
+      courseId={courseId}
+      lessonSlug={lessonSlug}
+      language={language}
+      nav={nav}
+      onNext={handleNext}
+      allLessons={allLessons}
+      completedLessons={completedLessons}
+      completionPercentage={completionPercentage}
       showCodeEditor={showCodeEditor}
       setShowCodeEditor={setShowCodeEditor}
       isRunning={isRunning}
@@ -105,6 +198,14 @@ export default function Course() {
 ===================================================== */
 
 function CourseLayout({
+  courseId,
+  lessonSlug,
+  language,
+  nav,
+  onNext,
+  allLessons,
+  completedLessons,
+  completionPercentage,
   showCodeEditor,
   setShowCodeEditor,
   isRunning,
@@ -114,6 +215,7 @@ function CourseLayout({
   return (
     <div className="text-foreground bg-background h-[calc(100vh-5rem)] flex flex-col">
       <CourseHeader
+        lessonSlug={lessonSlug}
         showCodeEditor={showCodeEditor}
         toggleEditor={() => setShowCodeEditor((prev) => !prev)}
         runCode={runCode}
@@ -121,11 +223,24 @@ function CourseLayout({
       />
 
       <ResizablePanelGroup orientation="horizontal" className="h-full">
-        <CourseSidebar />
+        <CourseSidebar
+          courseId={courseId}
+          lessonSlug={lessonSlug}
+          language={language}
+          allLessons={allLessons}
+          completedLessons={completedLessons}
+          completionPercentage={completionPercentage}
+        />
 
         <ResizableHandle />
 
-        <LessonSection showCodeEditor={showCodeEditor} />
+        <LessonSection
+          lessonSlug={lessonSlug}
+          language={language}
+          showCodeEditor={showCodeEditor}
+          nav={nav}
+          onNext={onNext}
+        />
 
         {showCodeEditor && (
           <>
@@ -147,9 +262,11 @@ function CourseLayout({
 ===================================================== */
 
 function CourseHeader({
+  lessonSlug,
   showCodeEditor,
   toggleEditor,
 }: {
+  lessonSlug: string;
   showCodeEditor: boolean;
   toggleEditor: () => void;
   runCode: () => void;
@@ -168,9 +285,10 @@ function CourseHeader({
         </Button>
 
         <div className="flex flex-col">
-          <h1 className="text-sm font-bold">Hello World in Rust</h1>
+          <h1 className="text-sm text-muted-foreground truncate text-pretty capitalize font-bold">{lessonSlug}</h1>
         </div>
       </div>
+
       <div className="flex items-center gap-4">
         <div className="hidden md:flex items-center gap-2 text-xs font-mono bg-white/5 px-3 py-1.5 rounded-md border border-white/5">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -197,20 +315,26 @@ function CourseHeader({
    SIDEBAR
 ===================================================== */
 
-function CourseSidebar() {
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const courseId = params.courseId as string;
-  const language = searchParams.get("lang") as string;
-  const userId = "1234";
-
+function CourseSidebar({
+  courseId,
+  lessonSlug,
+  language,
+  allLessons,
+  completedLessons,
+  completionPercentage,
+}: {
+  courseId: string;
+  lessonSlug: string;
+  language: string;
+  allLessons: FlatLesson[];
+  completedLessons: string[];
+  completionPercentage: number;
+}) {
   const { data: course } = useQuery(courseQueries.bySlug(courseId, language));
-  const { data: progress } = useQuery(progressQueries.course(userId, courseId));
 
   const modules = course?.modules as unknown as Array<
     Omit<Module, "lessons"> & { lessons: Lesson[] }
   >;
-  const completionPercentage = progress?.completionPercentage ?? 0;
 
   return (
     <ResizablePanel
@@ -238,15 +362,21 @@ function CourseSidebar() {
                 </div>
 
                 <div className="space-y-0.5">
-                  {mod?.lessons?.map((lesson, index) => (
-                    <LessonItem
-                      key={lesson._id}
-                      title={lesson.title as string}
-                      lessonSlug={lesson?.slug?.current as any}
-                      //check if this lesson index is in completedLessons array
-                      completed={progress?.completedLessons.includes(index)}
-                    />
-                  ))}
+                  {mod?.lessons?.map((lesson) => {
+                    const slug = lesson.slug?.current as string;
+                    const flat = allLessons.find((l) => l.id === lesson._id);
+                    return (
+                      <LessonItem
+                        key={lesson._id}
+                        title={lesson.title as string}
+                        lessonSlug={slug}
+                        activeLessonSlug={lessonSlug}
+                        completed={
+                          flat ? completedLessons.includes(flat.id) : false
+                        }
+                      />
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -260,12 +390,21 @@ function CourseSidebar() {
 /* =====================================================
    LESSON SECTION
 ===================================================== */
-function LessonSection({ showCodeEditor }: { showCodeEditor: boolean }) {
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const lessonSlug = params.courseLessonId?.[0] as string;
-  const language = searchParams.get("lang") as string;
-  const data = useQuery(lessonQueries.bySlug(lessonSlug, language));
+
+function LessonSection({
+  lessonSlug,
+  language,
+  showCodeEditor,
+  nav,
+  onNext,
+}: {
+  lessonSlug: string;
+  language: string;
+  showCodeEditor: boolean;
+  nav: LessonNavigation;
+  onNext: () => void;
+}) {
+  const { data } = useQuery(lessonQueries.bySlug(lessonSlug, language));
 
   return (
     <ResizablePanel
@@ -273,10 +412,9 @@ function LessonSection({ showCodeEditor }: { showCodeEditor: boolean }) {
       minSize={30}
       className="flex flex-col h-full"
     >
-      {/* Scrollable Content */}
       <ScrollArea className="flex-1">
         <div className="py-3 px-6 flex flex-col justify-between max-w-3xl mx-auto">
-          <PortableTextRenderer content={data?.data?.content as any} />
+          <PortableTextRenderer content={data?.content as any} />
 
           <div className="p-6 my-5 bg-blue-500/5 border border-blue-500/10 rounded-xl">
             <h4 className="flex items-center gap-2 font-bold text-blue-400 mb-2">
@@ -290,12 +428,81 @@ function LessonSection({ showCodeEditor }: { showCodeEditor: boolean }) {
         </div>
       </ScrollArea>
 
-      {/* Pinned Bottom Section */}
-      <div className="flex p-3 border-t justify-between bg-background">
-        <Button variant="outline">Previous</Button>
-        <Button variant="outline">Next Lesson</Button>
-      </div>
+      <LessonFooter nav={nav} onNext={onNext} language={language} />
     </ResizablePanel>
+  );
+}
+
+/* =====================================================
+   LESSON NAV — prev / next
+===================================================== */
+
+function LessonFooter({
+  nav,
+  onNext,
+  language,
+}: {
+  nav: LessonNavigation;
+  onNext: () => void;
+  language: string;
+}) {
+  const { prev, next, isCurrentCompleted } = nav;
+
+  return (
+    <div className="flex p-3 border-t justify-between items-center bg-background">
+      {/* Previous — disabled on first lesson */}
+      {prev ? (
+        <Link href={`${prev.slug}`}>
+          <Button variant="outline" className="gap-1.5 text-muted-foreground">
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Previous</span>
+          </Button>
+        </Link>
+      ) : (
+        <Button
+          variant="outline"
+          disabled
+          className="gap-1.5 text-muted-foreground"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span className="hidden sm:inline">Previous</span>
+        </Button>
+      )}
+
+      {/* Next — label reflects whether this lesson still needs completing */}
+      {next ? (
+        <Button
+          variant="outline"
+          onClick={onNext}
+          className="gap-1.5 text-muted-foreground"
+        >
+          {isCurrentCompleted ? (
+            <>
+              <span className="hidden sm:inline">Next Lesson</span>
+              <ChevronRight className="w-4 h-4" />
+            </>
+          ) : (
+            <>
+              <span className="hidden sm:inline">Complete & Continue</span>
+              <ChevronRight className="w-4 h-4" />
+            </>
+          )}
+        </Button>
+      ) : (
+        // Last lesson — only show if not yet completed
+        !isCurrentCompleted && (
+          <Button
+            variant="outline"
+            onClick={onNext}
+            className="gap-1.5 text-muted-foreground"
+          >
+            {/* <CheckCircle className="w-4 h-4" /> */}
+            <span className="hidden sm:inline">Complete Lesson</span>
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        )
+      )}
+    </div>
   );
 }
 
@@ -332,11 +539,10 @@ function CodeEditorPanel() {
     <ResizablePanel collapsible>
       <div className="h-full flex flex-col bg-muted">
         <div className="h-9 border-b border-border flex items-center px-4 bg-black/20">
-          <div className="px-3 py-1 bo border-t-2  text-muted-foreground border-primary text-xs font-mono">
+          <div className="px-3 py-1 border-t-2 text-muted-foreground border-primary text-xs font-mono">
             lib.rs
           </div>
         </div>
-
         <div className="flex-1">
           <MonacoEditor value={INITIAL_CODE} onChange={() => {}} />
         </div>
@@ -356,15 +562,15 @@ function TerminalPanel({
 }) {
   return (
     <ResizablePanel defaultSize={30} minSize={30}>
-      <div className="h-full flex flex-col  bg-background">
-        <div className="h-11 p-2 font-mono border-b justify-between  border-border flex items-center px-4">
+      <div className="h-full flex flex-col bg-background">
+        <div className="h-11 p-2 font-mono border-b justify-between border-border flex items-center px-4">
           <span className="text-xs font-mono font-bold text-muted-foreground flex items-center gap-2">
             <Terminal className="w-3 h-3" /> TERMINAL
           </span>
           <Button
             size="sm"
             variant="ghost"
-            className="h-5 w-fit text-muted-foreground  hover:bg-primary/90 font-bold"
+            className="h-5 w-fit text-muted-foreground hover:bg-primary/90 font-bold"
             onClick={runCode}
             disabled={isRunning}
           >
@@ -412,14 +618,16 @@ function TerminalPanel({
 function LessonItem({
   title,
   lessonSlug,
+  activeLessonSlug,
   completed,
 }: {
   title: string;
   lessonSlug: string;
+  activeLessonSlug: string;
   completed?: boolean;
 }) {
-  const params = useParams();
-  const active = params.courseLessonId?.[0] === lessonSlug;
+  const active = activeLessonSlug === lessonSlug;
+
   return (
     <Link
       href={lessonSlug}
