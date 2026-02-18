@@ -255,7 +255,7 @@ export class MockLearningService implements LearningProgressService {
     return {
       currentStreak: 0,
       longestStreak: 0,
-      lastActivityDate: new Date(),
+      lastActivityDate: new Date(0), // epoch — never equals today, so first lesson always triggers streak
       streakHistory: [],
     };
   }
