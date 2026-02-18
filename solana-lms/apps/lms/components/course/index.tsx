@@ -19,7 +19,7 @@ export default function Courses() {
   );
 
   return (
-    <div className="container max-w-6xl mx-auto px-4 py-12">
+    <div className="container max-w-5xl mx-auto px-4 py-12">
       <div className="flex flex-col gap-6 mb-12">
         <div>
           <h1 className="text-3xl tracking-tighter font-bold mb-2">

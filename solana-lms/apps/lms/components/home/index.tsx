@@ -308,7 +308,7 @@ function ActivityHeatmap({
 }) {
   const today = new Date();
   const { weeks, monthLabels } = buildHeatmapData(streakHistory, achievements);
-  const CELL = 12,
+  const CELL = 10,
     GAP = 2.5;
   return (
     <TooltipProvider delayDuration={60}>
@@ -436,7 +436,7 @@ export default function DashboardHome() {
   const recentCourse = data?.[0] ?? null;
 
   return (
-    <div className="container max-w-6xl py-10 mx-auto px-4 space-y-3">
+    <div className="container max-w-5xl py-10 mx-auto px-4 space-y-3">
       {/* ── Header ── */}
       <div className="pb-3">
         <h1 className="text-3xl tracking-tighter font-bold mb-1">
@@ -526,6 +526,8 @@ export default function DashboardHome() {
           accent="bg-yellow-500"
         />
       </div>
+
+      
 
       <section className="flex flex-col gap-4">
         {/* Simple two-column layout: 75% left, 25% right */}
@@ -638,7 +640,7 @@ export default function DashboardHome() {
               </div>
             ) : (
               <Link href="/course" className="w-full">
-                <div className="rounded-2xl border border-white/5 border-dashed hover:border-white/10 transition-colors p-8 flex flex-col items-center text-center gap-3 w-full">
+                <div className="rounded-2xl border border-white/5 border-dashed hover:border-white/10 transition-colors p-20 flex flex-col items-center text-center gap-3 w-full">
                   <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
                     <ICONS.bookOpen className="w-4 h-4 text-muted-foreground/40" />
                   </div>
@@ -767,7 +769,8 @@ export default function DashboardHome() {
           )}
         </div>
 
-        {/* Simple two-column layout: 75% left, 25% right */}
+        {recentCourse &&
+        
         <div className="grid pt-2 gap-3 grid-cols-1 lg:grid-cols-[1fr_minmax(0,24%)]">
           {/* ── Activity Heatmap (left column, bottom on mobile) ── */}
           <div className="rounded-2xl border border-white/5 bg-white/2 p-5 h-full">
@@ -815,6 +818,8 @@ export default function DashboardHome() {
             </div>
           </div>
         </div>
+        }
+
       </section>
     </div>
   );
