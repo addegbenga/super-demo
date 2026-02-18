@@ -33,7 +33,7 @@ export default function Profile() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container max-w-5xl mx-auto px-4 py-12">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Column - User Info */}
         <div className="lg:w-1/3 space-y-6">
@@ -98,34 +98,6 @@ export default function Profile() {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-white/10 bg-white/5">
-            <CardHeader>
-              <CardTitle className="text-lg">Skill Radar</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <SkillProgress
-                icon={<Code className="w-4 h-4" />}
-                label="Rust"
-                progress={75}
-              />
-              <SkillProgress
-                icon={<Box className="w-4 h-4" />}
-                label="Anchor"
-                progress={60}
-              />
-              <SkillProgress
-                icon={<LayoutIcon className="w-4 h-4" />}
-                label="Frontend"
-                progress={90}
-              />
-              <SkillProgress
-                icon={<Shield className="w-4 h-4" />}
-                label="Security"
-                progress={45}
-              />
             </CardContent>
           </Card>
         </div>

@@ -1,7 +1,7 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/components/providers/query-client";
 import { courseQueries } from "@/lib/queries";
-import { CourseGrid, CourseHeader } from "@/components/course";
+import { AllCourse } from "@/components/course";
 
 export default async function CoursePage({
   params,
@@ -15,16 +15,11 @@ export default async function CoursePage({
   const language = resolvedSearchParams.lang as string;
 
   // Prefetch on server
- await queryClient.prefetchQuery(courseQueries.all(language));
+  await queryClient.prefetchQuery(courseQueries.all(language));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="container max-w-5xl mx-auto px-4 py-12">
-        <CourseHeader />
-        {/* <Suspense  fallback={<CoursesGridSkeleton/>}> */}
-          <CourseGrid />
-        {/* </Suspense> */}
-      </div>
+      <AllCourse />
     </HydrationBoundary>
   );
 }
