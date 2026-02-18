@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@workspace/ui"],
-  experimental:{
-    staleTimes:{
-dynamic: 300, // 5 minutes
-    }
-
+  experimental: {
+    staleTimes: {
+      dynamic: 3600, // 1 hour Course conten hardly change we can make this 24hrs
+    },
   },
 
   images: {

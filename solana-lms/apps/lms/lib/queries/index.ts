@@ -64,27 +64,27 @@ export const queryKeys = {
 };
 
 // ==================== COURSE QUERIES  ====================
-
+const staleTime = 1000 * 60 * 60; // 1 hour
 export const courseQueries = {
   bySlug: (slug: string, language?: any) =>
     queryOptions({
       queryKey: queryKeys.courses.detail(slug, language),
       queryFn: () => queryBuilder.getCourseBySlug(slug, language),
-          staleTime: 1000 * 60 * 5, // 5 minutes — won't refetch on revisit
+      staleTime: staleTime,
     }),
   byIds: (ids: string[], language?: any) =>
     queryOptions({
       queryKey: queryKeys.courses.byIds(ids),
       queryFn: () => queryBuilder.getCourseByIds(ids, language),
       enabled: ids.length > 0,
-      staleTime: 5 * 60 * 1000
+      staleTime: staleTime,
     }),
 
   all: (lang?: any) =>
     queryOptions({
       queryKey: queryKeys.courses.all,
       queryFn: () => queryBuilder.getCourses(lang),
-      staleTime: 1000 * 60 * 5, // 5 minutes — won't refetch on revisit
+      staleTime: staleTime,
     }),
 };
 
@@ -95,14 +95,14 @@ export const lessonQueries = {
     queryOptions({
       queryKey: queryKeys.lessons.detail(slug, language),
       queryFn: () => queryBuilder.getLessonBySlug(slug, language as any),
-      staleTime: 1000 * 60 * 5, // 5 minutes — won't refetch on revisit
+      staleTime: staleTime,
     }),
 
   byId: (id: string) =>
     queryOptions({
       queryKey: [...queryKeys.lessons.all, "id", id] as const,
       queryFn: () => queryBuilder.getLessonById(id),
-      staleTime: 1000 * 60 * 5, // 5 minutes — won't refetch on revisit
+      staleTime: staleTime,
     }),
 
   adjacent: (moduleId: string) =>
