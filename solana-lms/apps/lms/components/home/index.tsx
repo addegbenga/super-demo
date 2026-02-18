@@ -587,10 +587,10 @@ export default function DashboardHome() {
                         <div className="flex-1 min-w-0 py-3 pr-4">
                           <div className="flex items-center gap-2 mb-1.5">
                             {done ? (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-emerald-400">
+                              <p className="inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-emerald-400">
                                 <CheckCircle2 className="w-2.5 h-2.5" />{" "}
-                                Completed
-                              </span>
+                               <span className="mt-0.5">Completed</span>
+                              </p>
                             ) : (
                               <p className="inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-primary/70">
                                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
