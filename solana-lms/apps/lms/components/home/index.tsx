@@ -640,12 +640,12 @@ export default function DashboardHome() {
               </div>
             ) : (
               <Link href="/course" className="w-full">
-                <div className="rounded-2xl border border-white/5 border-dashed hover:border-white/10 transition-colors p-20 flex flex-col items-center text-center gap-3 w-full">
+                <div className="rounded-2xl border bg-white/2 border-white/5 border-dashed hover:border-white/10 transition-colors p-20 flex flex-col items-center text-center gap-3 w-full">
                   <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
                     <ICONS.bookOpen className="w-4 h-4 text-muted-foreground/40" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">
+                    <p className="text-sm tracking-tight font-medium">
                       Start your first course
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -769,7 +769,7 @@ export default function DashboardHome() {
           )}
         </div>
 
-        {recentCourse &&
+   
         
         <div className="grid pt-2 gap-3 grid-cols-1 lg:grid-cols-[1fr_minmax(0,24%)]">
           {/* ── Activity Heatmap (left column, bottom on mobile) ── */}
@@ -818,7 +818,7 @@ export default function DashboardHome() {
             </div>
           </div>
         </div>
-        }
+        
 
       </section>
     </div>
