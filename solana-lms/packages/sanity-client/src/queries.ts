@@ -12,7 +12,7 @@ export const queries = {
     xpReward,
     track,
     language,
-    thumbnail,
+    "thumbnail": thumbnail.asset->url,
     tags,
     stats,
     "moduleCount": count(modules),
@@ -20,7 +20,7 @@ export const queries = {
     "instructors": instructors[]-> {
       _id,
       name,
-      avatar,
+      "avatar": avatar.asset->url,
       role
     }
   }`,
@@ -39,6 +39,84 @@ export const queries = {
     _updatedAt
   }`,
 
+  // Get course by ID with full details
+courseById: `*[_type == "course" && _id == $id && language == $language][0] {
+  _id,
+  title,
+  slug,
+  description,
+  fullDescription,
+  learningObjectives,
+  difficulty,
+  duration,
+  xpReward,
+  track,
+  language,
+  "thumbnail": thumbnail.asset->url,
+  status,
+  tags,
+  stats,
+  "prerequisites": prerequisites[]-> {
+    _id,
+    title,
+    slug,
+    difficulty
+  },
+  "modules": modules[]-> {
+    _id,
+    title,
+    description,
+    order,
+    "lessons": lessons[]-> {
+      _id,
+      title,
+      slug,
+      type,
+      duration,
+      xpReward,
+      order,
+      language,
+      hasVideo,
+      hasTextContent
+    } | order(order asc)
+  } | order(order asc),
+  "instructors": instructors[]-> {
+    _id,
+    name,
+    "avatar": avatar.asset->url,
+    role,
+    bio,
+    social
+  },
+  "completionAchievement": completionAchievement-> {
+    _id,
+    id,
+    name,
+    description,
+    icon,
+    category
+  },
+  "reviews": *[_type == "review" && courseId == ^._id && verified == true] | order(rating desc, createdAt desc) {
+    _id,
+    userName,
+    userRole,
+    "userAvatar": userAvatar.asset->url,
+    rating,
+    content,
+    featured,
+    createdAt
+  },
+  "featuredReviews": *[_type == "review" && courseId == ^._id && featured == true && verified == true] | order(featuredOrder asc, rating desc) [0...4] {
+    _id,
+    userName,
+    userRole,
+    "userAvatar": userAvatar.asset->url,
+    rating,
+    content,
+    createdAt
+  }
+}`,
+
   // Get course by slug with full details
   courseBySlug: `*[_type == "course" && slug.current == $slug && language == $language][0] {
     _id,
@@ -52,7 +130,7 @@ export const queries = {
     xpReward,
     track,
     language,
-    thumbnail,
+    "thumbnail": thumbnail.asset->url,
     status,
     tags,
     stats,
@@ -67,7 +145,6 @@ export const queries = {
       title,
       description,
       order,
-      language,
       "lessons": lessons[]-> {
         _id,
         title,
@@ -79,12 +156,12 @@ export const queries = {
         language,
         hasVideo,
         hasTextContent
-      }[language == $language] | order(order asc)
-    }[language == $language] | order(order asc),
+      } | order(order asc)
+    } | order(order asc),
     "instructors": instructors[]-> {
       _id,
       name,
-      avatar,
+      "avatar": avatar.asset->url,
       role,
       bio,
       social
@@ -96,8 +173,28 @@ export const queries = {
       description,
       icon,
       category
-    }
+    },
+    "reviews": *[_type == "review" && courseId == ^._id && verified == true] | order(rating desc, createdAt desc) {
+    _id,
+    userName,
+    userRole,
+    "userAvatar": userAvatar.asset->url,
+    rating,
+    content,
+    featured,
+    createdAt
+  },
+    "featuredReviews": *[_type == "review" && courseId == ^._id && featured == true && verified == true] | order(featuredOrder asc, rating desc) [0...4] {
+    _id,
+    userName,
+    userRole,
+    "userAvatar": userAvatar.asset->url,
+    rating,
+    content,
+    createdAt
+  }
   }`,
+
 
   // Get course by slug with fallback to any language
   courseBySlugFallback: `*[_type == "course" && slug.current == $slug && status == "published"][0] {
@@ -339,7 +436,7 @@ export const queries = {
     videoProvider,
     videoUrl,
     videoDuration,
-    videoThumbnail,
+    "videoThumbnail": videoThumbnail.asset->url,
     
     // Text content fields
     hasTextContent,

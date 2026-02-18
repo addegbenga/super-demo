@@ -2,11 +2,12 @@ import type { PublicKey } from '@solana/web3.js'
 
 export interface Progress {
   courseId: string
-  completedLessons: number[]
+  completedLessons: string[]
   completionPercentage: number
   xpEarned: number
   startedAt: Date
-  lastActivityAt: Date
+  lastActivityAt: Date,
+  enrolled:boolean,
 }
 
 export interface StreakData {
@@ -47,31 +48,32 @@ export interface Achievement {
   unlockedAt?: Date
 }
 
+
 /**
  * Service interface for learning progress and gamification
  * This abstraction allows swapping between mock (localStorage) and on-chain implementations
  */
 export interface LearningProgressService {
   // Progress tracking
-  getProgress(userId: string, courseId: string): Promise<Progress>
-  completeLesson(userId: string, courseId: string, lessonIndex: number): Promise<void>
-  enrollInCourse(userId: string, courseId: string): Promise<void>
+  getProgress(data:{userId: string, courseId: string}): Promise<Progress>
+  completeLesson(data:{userId: string, courseId: string, lessonId: string}): Promise<any>
+  enrollInCourse(data:{userId: string, courseId: string}): Promise<any>
   
   // XP & Leveling
-  getXP(userId: string): Promise<number>
-  getLevel(userId: string): Promise<number>
-  addXP(userId: string, amount: number): Promise<void>
+  getXP(data:{userId: string}): Promise<number>
+  getLevel(data:{userId: string}): Promise<number>
+  addXP(data:{userId: string, amount: number}): Promise<void>
   
   // Streaks
   getStreak(userId: string): Promise<StreakData>
   
   // Leaderboard
-  getLeaderboard(timeframe: 'weekly' | 'monthly' | 'alltime'): Promise<LeaderboardEntry[]>
+  getLeaderboard(data:{timeframe: 'weekly' | 'monthly' | 'alltime'}): Promise<LeaderboardEntry[]>
   
   // Credentials (cNFTs)
-  getCredentials(wallet: PublicKey): Promise<Credential[]>
+  getCredentials(data:{wallet: PublicKey}): Promise<Credential[]>
   
   // Achievements
-  getAchievements(userId: string): Promise<Achievement[]>
-  unlockAchievement(userId: string, achievementId: string): Promise<void>
+  getAchievements(data:{userId: string}): Promise<Achievement[]>
+  unlockAchievement(data:{userId: string, achievementId: string}): Promise<void>
 }

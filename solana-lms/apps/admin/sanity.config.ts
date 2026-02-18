@@ -38,6 +38,7 @@ export default defineConfig({
             S.listItem()
               .title('Achievements')
               .child(S.documentTypeList('achievement').title('Achievements')),
+            S.listItem().title('Review').child(S.documentTypeList('review').title('Review')),
           ]),
     }),
     visionTool(),

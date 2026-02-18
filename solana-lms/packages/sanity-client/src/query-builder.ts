@@ -1,4 +1,3 @@
-import { client } from "./client.ts";
 import { queries } from "./queries.ts";
 import type { SupportedLanguage } from "./language.ts";
 import type {
@@ -10,6 +9,7 @@ import type {
   LearningPath,
   Review,
 } from "./types.gen.ts";
+import { publicClient } from "./client.ts";
 
 type QueryParams = {
   language?: SupportedLanguage;
@@ -102,7 +102,7 @@ export class QueryBuilder {
   ): Promise<T> {
     const query = queries[queryKey];
     const language = params.language || this.defaultLanguage;
-    return client.fetch<T>(query, { ...params, language });
+    return publicClient.fetch<T>(query, { ...params, language });
   }
   // ==================== COURSES ====================
 
@@ -119,6 +119,13 @@ export class QueryBuilder {
     language?: SupportedLanguage,
   ): Promise<Course> {
     return this.execute<Course>("courseBySlug", { slug, language });
+  }
+
+  async getCourseById(
+    slug: string,
+    language?: SupportedLanguage,
+  ): Promise<Course> {
+    return this.execute<Course>("courseById", { slug, language });
   }
 
   async getCourseBySlugFallback(slug: string): Promise<Course> {

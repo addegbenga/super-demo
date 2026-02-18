@@ -1,4 +1,4 @@
-import type { LearningProgressService } from './interfaces.js'
+import type { LearningProgressService } from './interfaces.ts'
 
 /**
  * On-chain implementation stub

@@ -1,10 +1,18 @@
-import { defineType, defineField } from 'sanity'
+import {defineType, defineField} from 'sanity'
 
 export default defineType({
   name: 'lesson',
   title: 'Lesson',
   type: 'document',
   fields: [
+    // Language field (added by plugin, but we make it explicit)
+    defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+    }),
+
     defineField({
       name: 'title',
       title: 'Title',
@@ -43,7 +51,7 @@ export default defineType({
     }),
 
     // ==================== CONTENT OPTIONS ====================
-    
+
     defineField({
       name: 'hasVideo',
       title: 'Include Video Content',
@@ -51,7 +59,7 @@ export default defineType({
       description: 'Does this lesson have a video?',
       initialValue: false,
     }),
-    
+
     defineField({
       name: 'hasTextContent',
       title: 'Include Text Content',
@@ -59,7 +67,7 @@ export default defineType({
       description: 'Does this lesson have written content?',
       initialValue: true,
     }),
-    
+
     defineField({
       name: 'hasCodeChallenge',
       title: 'Include Code Challenge',
@@ -69,27 +77,27 @@ export default defineType({
     }),
 
     // ==================== VIDEO FIELDS ====================
-    
+
     defineField({
       name: 'videoProvider',
       title: 'Video Provider',
       type: 'string',
       options: {
         list: [
-          { title: 'YouTube', value: 'youtube' },
-          { title: 'Vimeo', value: 'vimeo' },
-          { title: 'Direct URL (MP4)', value: 'direct' },
-          { title: 'Loom', value: 'loom' },
+          {title: 'YouTube', value: 'youtube'},
+          {title: 'Vimeo', value: 'vimeo'},
+          {title: 'Direct URL (MP4)', value: 'direct'},
+          {title: 'Loom', value: 'loom'},
         ],
       },
-      hidden: ({ parent }) => !parent?.hasVideo,
+      hidden: ({parent}) => !parent?.hasVideo,
     }),
     defineField({
       name: 'videoUrl',
       title: 'Video URL',
       type: 'url',
       description: 'YouTube, Vimeo, Loom, or direct video URL',
-      hidden: ({ parent }) => !parent?.hasVideo,
+      hidden: ({parent}) => !parent?.hasVideo,
       validation: (Rule) =>
         Rule.custom((value, context) => {
           const parent = context.parent as any
@@ -104,7 +112,7 @@ export default defineType({
       title: 'Video Duration (minutes)',
       type: 'number',
       description: 'Length of the video',
-      hidden: ({ parent }) => !parent?.hasVideo,
+      hidden: ({parent}) => !parent?.hasVideo,
     }),
     defineField({
       name: 'videoThumbnail',
@@ -114,11 +122,11 @@ export default defineType({
       options: {
         hotspot: true,
       },
-      hidden: ({ parent }) => !parent?.hasVideo,
+      hidden: ({parent}) => !parent?.hasVideo,
     }),
 
     // ==================== TEXT CONTENT FIELDS ====================
-    
+
     defineField({
       name: 'content',
       title: 'Text Content',
@@ -128,19 +136,19 @@ export default defineType({
         {
           type: 'block',
           styles: [
-            { title: 'Normal', value: 'normal' },
-            { title: 'H2', value: 'h2' },
-            { title: 'H3', value: 'h3' },
-            { title: 'H4', value: 'h4' },
-            { title: 'Quote', value: 'blockquote' },
+            {title: 'Normal', value: 'normal'},
+            {title: 'H2', value: 'h2'},
+            {title: 'H3', value: 'h3'},
+            {title: 'H4', value: 'h4'},
+            {title: 'Quote', value: 'blockquote'},
           ],
           marks: {
             decorators: [
-              { title: 'Strong', value: 'strong' },
-              { title: 'Emphasis', value: 'em' },
-              { title: 'Code', value: 'code' },
-              { title: 'Underline', value: 'underline' },
-              { title: 'Strike', value: 'strike-through' },
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+              {title: 'Code', value: 'code'},
+              {title: 'Underline', value: 'underline'},
+              {title: 'Strike', value: 'strike-through'},
             ],
             annotations: [
               {
@@ -166,7 +174,7 @@ export default defineType({
         },
         {
           type: 'image',
-          options: { hotspot: true },
+          options: {hotspot: true},
           fields: [
             {
               name: 'alt',
@@ -187,19 +195,19 @@ export default defineType({
           options: {
             language: 'rust',
             languageAlternatives: [
-              { title: 'Rust', value: 'rust' },
-              { title: 'TypeScript', value: 'typescript' },
-              { title: 'JavaScript', value: 'javascript' },
-              { title: 'JSON', value: 'json' },
-              { title: 'Shell', value: 'sh' },
-              { title: 'Solidity', value: 'solidity' },
-              { title: 'Python', value: 'python' },
+              {title: 'Rust', value: 'rust'},
+              {title: 'TypeScript', value: 'typescript'},
+              {title: 'JavaScript', value: 'javascript'},
+              {title: 'JSON', value: 'json'},
+              {title: 'Shell', value: 'sh'},
+              {title: 'Solidity', value: 'solidity'},
+              {title: 'Python', value: 'python'},
             ],
             withFilename: true,
           },
         },
       ],
-      hidden: ({ parent }) => !parent?.hasTextContent,
+      hidden: ({parent}) => !parent?.hasTextContent,
       validation: (Rule) =>
         Rule.custom((value, context) => {
           const parent = context.parent as any
@@ -211,14 +219,14 @@ export default defineType({
     }),
 
     // ==================== CODE CHALLENGE FIELDS ====================
-    
+
     defineField({
       name: 'challengePrompt',
       title: 'Challenge Prompt',
       type: 'text',
       rows: 4,
       description: 'Clear objectives and expected output',
-      hidden: ({ parent }) => !parent?.hasCodeChallenge,
+      hidden: ({parent}) => !parent?.hasCodeChallenge,
       validation: (Rule) =>
         Rule.custom((value, context) => {
           const parent = context.parent as any
@@ -235,14 +243,14 @@ export default defineType({
       options: {
         language: 'typescript',
         languageAlternatives: [
-          { title: 'Rust', value: 'rust' },
-          { title: 'TypeScript', value: 'typescript' },
-          { title: 'JavaScript', value: 'javascript' },
-          { title: 'Python', value: 'python' },
+          {title: 'Rust', value: 'rust'},
+          {title: 'TypeScript', value: 'typescript'},
+          {title: 'JavaScript', value: 'javascript'},
+          {title: 'Python', value: 'python'},
         ],
         withFilename: true,
       },
-      hidden: ({ parent }) => !parent?.hasCodeChallenge,
+      hidden: ({parent}) => !parent?.hasCodeChallenge,
     }),
     defineField({
       name: 'solution',
@@ -251,14 +259,14 @@ export default defineType({
       options: {
         language: 'typescript',
         languageAlternatives: [
-          { title: 'Rust', value: 'rust' },
-          { title: 'TypeScript', value: 'typescript' },
-          { title: 'JavaScript', value: 'javascript' },
-          { title: 'Python', value: 'python' },
+          {title: 'Rust', value: 'rust'},
+          {title: 'TypeScript', value: 'typescript'},
+          {title: 'JavaScript', value: 'javascript'},
+          {title: 'Python', value: 'python'},
         ],
         withFilename: true,
       },
-      hidden: ({ parent }) => !parent?.hasCodeChallenge,
+      hidden: ({parent}) => !parent?.hasCodeChallenge,
     }),
     defineField({
       name: 'testCases',
@@ -296,7 +304,7 @@ export default defineType({
               name: 'name',
               isHidden: 'isHidden',
             },
-            prepare({ name, isHidden }) {
+            prepare({name, isHidden}) {
               return {
                 title: name || 'Test Case',
                 subtitle: isHidden ? '🔒 Hidden' : '👁️ Visible',
@@ -305,16 +313,16 @@ export default defineType({
           },
         },
       ],
-      hidden: ({ parent }) => !parent?.hasCodeChallenge,
+      hidden: ({parent}) => !parent?.hasCodeChallenge,
     }),
 
     // ==================== COMMON FIELDS ====================
-    
+
     defineField({
       name: 'hints',
       title: 'Hints',
       type: 'array',
-      of: [{ type: 'text' }],
+      of: [{type: 'text'}],
       description: 'Progressive hints to help students',
     }),
     defineField({
@@ -350,7 +358,7 @@ export default defineType({
               title: 'title',
               type: 'type',
             },
-            prepare({ title, type }) {
+            prepare({title, type}) {
               const emoji = {
                 documentation: '📚',
                 article: '📄',
@@ -377,15 +385,15 @@ export default defineType({
       order: 'order',
       xp: 'xpReward',
     },
-    prepare({ title, hasVideo, hasTextContent, hasCodeChallenge, order, xp }) {
+    prepare({title, hasVideo, hasTextContent, hasCodeChallenge, order, xp}) {
       // Build emoji based on what's included
       const parts = []
       if (hasVideo) parts.push('🎥')
       if (hasTextContent) parts.push('📝')
       if (hasCodeChallenge) parts.push('💻')
-      
+
       const emoji = parts.length > 0 ? parts.join(' ') : '📖'
-      
+
       return {
         title: `${order + 1}. ${title}`,
         subtitle: `${emoji} • ${xp} XP`,
