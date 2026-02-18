@@ -70,6 +70,7 @@ export const courseQueries = {
     queryOptions({
       queryKey: queryKeys.courses.detail(slug, language),
       queryFn: () => queryBuilder.getCourseBySlug(slug, language),
+      staleTime: 1000 * 60 * 60, 
     }),
   byIds: (ids: string[], language?: any) =>
     queryOptions({
@@ -83,6 +84,7 @@ export const courseQueries = {
     queryOptions({
       queryKey: queryKeys.courses.all,
       queryFn: () => queryBuilder.getCourses(lang),
+      staleTime: 1000 * 60 * 60, 
     }),
 };
 
