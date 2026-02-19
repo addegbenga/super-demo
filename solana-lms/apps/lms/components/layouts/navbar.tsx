@@ -83,7 +83,7 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
-            {navItems.map((item,idx) => {
+            {navItems.map((item, idx) => {
               const active = isActive(item.href);
               return (
                 <Link
