@@ -1,5 +1,5 @@
-import { Navbar } from "./navbar.js";
-import { Footer } from "./footer.js";
+import { Navbar } from "./navbar";
+import { Footer } from "./footer";
 
 export function HomeLayout({ children }: { children: React.ReactNode }) {
   return (
