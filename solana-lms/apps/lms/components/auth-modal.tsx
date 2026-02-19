@@ -178,7 +178,7 @@ export function AuthModal({
               height="9.5"
               rx="1"
               fill="white"
-              fill-opacity="0.95"
+              fillOpacity="0.95"
             />
             <rect
               x="6.30295"

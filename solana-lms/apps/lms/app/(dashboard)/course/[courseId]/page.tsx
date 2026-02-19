@@ -21,7 +21,7 @@ export default async function CoursePage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <CourseDetail />
+        <CourseDetail />
     </HydrationBoundary>
   );
 }

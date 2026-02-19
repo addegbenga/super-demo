@@ -181,8 +181,8 @@ export default defineType({
       title: 'XP Reward',
       type: 'number',
       description: 'Total XP earned for completing the course',
-      validation: (Rule) => Rule.required().min(500).max(2000),
-      initialValue: 1000,
+      validation: (Rule) => Rule.required().min(10).max(10000),
+      initialValue: 10,
     }),
     defineField({
       name: 'modules',

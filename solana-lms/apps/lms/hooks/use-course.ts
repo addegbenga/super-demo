@@ -46,7 +46,7 @@ export type CourseProgressResponse = CourseProgressItem[];
 
 export function useCourse(slug: string) {
   const queryClient = useQueryClient();
-  const userId = getCurrentUserId();
+  const {userId} = getCurrentUserId();
 
   // Fetch course data
   const {

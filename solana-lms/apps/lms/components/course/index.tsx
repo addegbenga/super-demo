@@ -1,6 +1,6 @@
 "use client";
 import { courseQueries } from "@/lib/queries";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery} from "@tanstack/react-query";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Clock, Zap, AlertCircle } from "lucide-react";

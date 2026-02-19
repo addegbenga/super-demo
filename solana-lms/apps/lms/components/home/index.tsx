@@ -17,165 +17,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
-import {
-  Trophy,
-  Flame,
-  Target,
-  Zap,
-  ChevronRight,
-  BookOpen,
-  Star,
-  TrendingUp,
-  Award,
-  Lock,
-  ArrowRight,
-  Play,
-  CheckCircle2,
-} from "lucide-react";
+import { Trophy, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-
-// ─── Icons ────────────────────────────────────────────────────────────────────
-
-const ICONS = {
-  xp: Zap,
-  streak: Flame,
-  level: Target,
-  trophy: Trophy,
-  bookOpen: BookOpen,
-  chevronRight: ChevronRight,
-  first_steps: Star,
-  course_completer: Trophy,
-  week_warrior: Flame,
-  monthly_master: Award,
-  consistency_king: Target,
-  rust_rookie: Zap,
-  anchor_expert: TrendingUp,
-  early_adopter: Star,
-} as const;
-
-// ─── Achievement definitions ──────────────────────────────────────────────────
-
-const ACHIEVEMENT_DEFS = [
-  {
-    id: "first_steps",
-    label: "First Steps",
-    description: "Complete your very first lesson.",
-  },
-  {
-    id: "course_completer",
-    label: "Course Completion",
-    description: "Finish an entire course from start to finish.",
-  },
-  {
-    id: "week_warrior",
-    label: "Week Warrior",
-    description: "Maintain a 7-day learning streak.",
-  },
-  {
-    id: "monthly_master",
-    label: "Monthly Master",
-    description: "Hit a 30-day streak. Real habit formed.",
-  },
-  {
-    id: "consistency_king",
-    label: "Consistent Learner",
-    description: "100-day streak. Legendary dedication.",
-  },
-  {
-    id: "rust_rookie",
-    label: "Speed Runner",
-    description: "Complete a course in record time.",
-  },
-  {
-    id: "anchor_expert",
-    label: "Knowledge Master",
-    description: "Master the Anchor framework.",
-  },
-  {
-    id: "early_adopter",
-    label: "Legend",
-    description: "Joined during early access.",
-  },
-] as const;
-
-type AchievementId = (typeof ACHIEVEMENT_DEFS)[number]["id"];
-type Achievement = { id: string; unlockedAt?: string };
-type HeatmapCell = { date: Date; active: boolean; achievement: string | null };
-
-// ─── Heatmap helpers ──────────────────────────────────────────────────────────
-
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-const DAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
-
-function buildHeatmapData(streakHistory: Date[], achievements: Achievement[]) {
-  const today = new Date();
-  const historySet = new Set(
-    streakHistory.map((d) => new Date(d).toDateString()),
-  );
-  const achievementMap = new Map<string, string>();
-  achievements.forEach((a) => {
-    if (a.unlockedAt)
-      achievementMap.set(new Date(a.unlockedAt).toDateString(), a.id);
-  });
-  const yearStart = new Date(today.getFullYear(), 0, 1);
-  const yearEnd = new Date(today.getFullYear(), 11, 31);
-  const gridStart = new Date(yearStart);
-  gridStart.setDate(yearStart.getDate() - yearStart.getDay());
-  const gridEnd = new Date(yearEnd);
-  gridEnd.setDate(yearEnd.getDate() + (6 - yearEnd.getDay()));
-  const cells: HeatmapCell[] = [];
-  const cursor = new Date(gridStart);
-  while (cursor <= gridEnd) {
-    const key = cursor.toDateString();
-    const inYear = cursor >= yearStart && cursor <= yearEnd;
-    cells.push({
-      date: new Date(cursor),
-      active: inYear && historySet.has(key),
-      achievement: inYear ? (achievementMap.get(key) ?? null) : null,
-    });
-    cursor.setDate(cursor.getDate() + 1);
-  }
-  const weeks: HeatmapCell[][] = [];
-  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
-  const monthLabels: { label: string; col: number }[] = [];
-  weeks.forEach((week, wi) => {
-    week.forEach((cell) => {
-      if (
-        cell.date >= yearStart &&
-        cell.date <= yearEnd &&
-        cell.date.getDate() === 1
-      )
-        monthLabels.push({
-          label: MONTHS[cell.date.getMonth()] as string,
-          col: wi,
-        });
-    });
-  });
-  return { weeks, monthLabels };
-}
-
-function cellStyle(cell: HeatmapCell, isToday: boolean, inFuture: boolean) {
-  if (cell.achievement)
-    return "bg-yellow-400 shadow-sm shadow-yellow-400/40 ring-1 ring-yellow-300/30";
-  if (isToday) return "bg-primary/40 ring-1 ring-primary/60";
-  if (cell.active) return "bg-primary/70";
-  if (inFuture) return "bg-white/[0.03]";
-  return "bg-white/[0.06]";
-}
+import {
+  ACHIEVEMENT_DEFS,
+  Achievement,
+  AchievementId,
+  DAY_LABELS,
+  HeatmapCell,
+  ICONS,
+  buildHeatmapData,
+  cellStyle,
+} from "@/lib/helper";
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 
@@ -589,7 +443,7 @@ export default function DashboardHome() {
                             {done ? (
                               <p className="inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-emerald-400">
                                 <CheckCircle2 className="w-2.5 h-2.5" />{" "}
-                               <span className="mt-0.5">Completed</span>
+                                <span className="mt-0.5">Completed</span>
                               </p>
                             ) : (
                               <p className="inline-flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-primary/70">

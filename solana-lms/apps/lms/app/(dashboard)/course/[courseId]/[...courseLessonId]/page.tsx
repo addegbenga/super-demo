@@ -17,7 +17,7 @@ export default async function CoursePage({
   const courseId = resolvedParams.courseId as string;
   const lessonSlug = resolvedParams.courseLessonId?.[0] as string;
 
-  // ✅ Parallel prefetch - both fire at the same time
+  // Parallel prefetch - both fire at the same time
   await Promise.all([
     queryClient.prefetchQuery(courseQueries.bySlug(courseId, language)),
     queryClient.prefetchQuery(lessonQueries.bySlug(lessonSlug, language)),

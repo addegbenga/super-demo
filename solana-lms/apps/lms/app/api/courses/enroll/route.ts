@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { serverClient, publicClient } from '@workspace/sanity-client'
+import { serverClient } from '@workspace/sanity-client'
 
 export async function POST(request: NextRequest) {
   try {

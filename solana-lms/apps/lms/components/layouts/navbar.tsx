@@ -1,5 +1,5 @@
 "use client";
-import { Trophy, User, Zap, Menu, Wallet } from "lucide-react";
+import { Trophy, Zap, Menu } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@workspace/ui/components/button";
@@ -14,10 +14,11 @@ import { getCurrentUserId } from "@/hooks/auth";
 import { StreakPopover } from "../streak";
 import { usePathname } from "next/navigation";
 import { cn } from "@workspace/ui/lib/utils";
+import { WalletPopover } from "../wallet";
 
 export function Navbar() {
   const pathname = usePathname();
-  const userId = getCurrentUserId();
+  const { userId } = getCurrentUserId();
   const { data: user } = useQuery(userQueries.profile(userId));
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -25,12 +26,11 @@ export function Navbar() {
     { label: "Courses", href: "/course" },
     { label: "Leaderboard", href: "/leaderboard" },
     { label: "Profile", href: "/profile" },
+    { label: "Certificate", href: "/certificate" },
   ];
 
-  const isActive = (href: string) => {
-    // Handles nested routes like /course/123
-    return pathname === href || pathname.startsWith(`${href}/`);
-  };
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header className="sticky top-0 w-full z-50 border-b border-white/5 bg-background/60 backdrop-blur-xl">
@@ -83,18 +83,17 @@ export function Navbar() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => {
+            {navItems.map((item,idx) => {
               const active = isActive(item.href);
               return (
                 <Link
                   className={cn(
-                    "text-muted-foreground text-sm",
-
+                    "text-sm",
                     active
-                      ? " text-foreground font-medium"
+                      ? "text-foreground font-medium"
                       : "text-muted-foreground hover:text-white",
                   )}
-                  key={item.href}
+                  key={idx}
                   href={item.href}
                 >
                   {item.label}
@@ -104,18 +103,13 @@ export function Navbar() {
           </nav>
         </div>
 
-        <div className="hidden md:flex items-center gap-4">
+        {/* Desktop Right */}
+        <div className="hidden md:flex items-center gap-3">
           <StreakPopover
             xp={user?.xp ?? 0}
             streak={user?.streak.current ?? 0}
           />
-
-          <Link
-            className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-            href="/dashboard"
-          >
-            <User className="w-4 h-4" />
-          </Link>
+          <WalletPopover />
         </div>
 
         {/* Mobile Menu */}
@@ -155,12 +149,7 @@ export function Navbar() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <Button className="w-full gap-2 bg-linear-to-r from-primary to-secondary text-black font-bold">
-                  <Wallet className="w-4 h-4" />
-                  Connect Wallet
-                </Button>
-              </div>
+              <WalletPopover />
             </div>
           </SheetContent>
         </Sheet>

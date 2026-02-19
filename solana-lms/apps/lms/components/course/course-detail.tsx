@@ -54,7 +54,7 @@ type IProps = {
 // ==================== COMPONENTS ====================
 
 function CourseHero({ courseId, data }: IProps) {
-  const userId = getCurrentUserId();
+  const {userId} = getCurrentUserId();
   const navigation = useRouter();
   const { enroll } = useCourse(courseId as string);
   const progress = useQuery(
@@ -464,7 +464,7 @@ export default function CourseDetail() {
   const searchParams = useSearchParams();
   const courseId = params.courseId as string;
   const language = searchParams.get("lang") as string;
-  const data = useSuspenseQuery(courseQueries.bySlug(courseId, language));
+  const data = useQuery(courseQueries.bySlug(courseId, language));
 
   return (
     <div className="bg-background container mx-auto max-w-6xl pt-12 px-4 pb-24">

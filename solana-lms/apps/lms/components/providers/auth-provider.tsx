@@ -27,7 +27,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({
   children,
-  protectedRoutes = ["/protected"],
+  protectedRoutes = ["/", "/course","/profile","/leaderboard"],
 }: AuthProviderProps) {
   const { connected } = useWallet();
   const pathname = usePathname();

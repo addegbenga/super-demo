@@ -1,5 +1,4 @@
 "use client";
-
 import {
   ArrowLeft,
   CheckCircle,
@@ -18,7 +17,7 @@ import {
   FileText,
   Video,
 } from "lucide-react";
-import { useState } from "react";
+import {useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@workspace/ui/components/button";
@@ -34,7 +33,7 @@ import { PortableTextRenderer } from "../markdown";
 import { MonacoEditor } from "../monaco-editor";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { courseQueries, lessonQueries, progressQueries } from "@/lib/queries";
 import { Lesson, Module } from "@workspace/sanity-client";
 import { useCourse } from "@/hooks/use-course";
@@ -99,7 +98,7 @@ export default function Course() {
   const courseSlug = params.courseId as string;
   const lessonSlug = params.courseLessonId?.[0] as string;
   const language = searchParams.get("lang") as string;
-  const userId = getCurrentUserId()
+  const {userId} = getCurrentUserId();
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const { completeLesson } = useCourse(courseSlug);
 
@@ -167,7 +166,6 @@ export default function Course() {
       />
 
       <ResizablePanelGroup orientation="horizontal" className="h-full">
-        
         <Sidebar
           courseSlug={courseSlug}
           lessonSlug={lessonSlug}
@@ -286,46 +284,46 @@ function Sidebar({
     //   maxSize="20%"
     //   className="bg-black/20 min-w-5 border-border/50"
     // >
-      <div className="h-full max-w-[18rem] hidden lg:flex flex-col">
-        <div className="p-4 border-b border-border/50">
-          <p className="font-medium text-muted-foreground tracking-tight text-xs mb-1">
-            Course progress
-          </p>
-          <Progress value={completionPercentage} className="h-1 bg-white/10" />
-          <p className="text-xs tracking-tight text-muted-foreground mt-1">
-            {completionPercentage}% Complete
-          </p>
-        </div>
-
-        <ScrollArea className="flex-1 overflow-y-auto">
-          <div className="p-4 space-y-4">
-            {modules?.map((mod) => (
-              <div key={mod._id} className="space-y-2">
-                <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-2">
-                  {mod.title}
-                </div>
-                <div className="space-y-0.5">
-                  {mod?.lessons?.map((lesson) => {
-                    const slug = lesson.slug?.current as string;
-                    const flat = allLessons.find((l) => l.id === lesson._id);
-                    return (
-                      <LessonNavItem
-                        key={lesson._id}
-                        title={lesson.title as string}
-                        lessonSlug={slug}
-                        activeLessonSlug={lessonSlug}
-                        completed={
-                          flat ? completedLessons.includes(flat.id) : false
-                        }
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+    <div className="h-full max-w-[18rem] hidden lg:flex flex-col">
+      <div className="p-4 border-b border-border/50">
+        <p className="font-medium text-muted-foreground tracking-tight text-xs mb-1">
+          Course progress
+        </p>
+        <Progress value={completionPercentage} className="h-1 bg-white/10" />
+        <p className="text-xs tracking-tight text-muted-foreground mt-1">
+          {completionPercentage}% Complete
+        </p>
       </div>
+
+      <ScrollArea className="flex-1 overflow-y-auto">
+        <div className="p-4 space-y-4">
+          {modules?.map((mod) => (
+            <div key={mod._id} className="space-y-2">
+              <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-2">
+                {mod.title}
+              </div>
+              <div className="space-y-0.5">
+                {mod?.lessons?.map((lesson) => {
+                  const slug = lesson.slug?.current as string;
+                  const flat = allLessons.find((l) => l.id === lesson._id);
+                  return (
+                    <LessonNavItem
+                      key={lesson._id}
+                      title={lesson.title as string}
+                      lessonSlug={slug}
+                      activeLessonSlug={lessonSlug}
+                      completed={
+                        flat ? completedLessons.includes(flat.id) : false
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
     // </ResizablePanel>
   );
 }
@@ -753,7 +751,12 @@ function EditorPanel({
   };
 
   return (
-    <ResizablePanel     id="right" defaultSize={350} minSize={300} className="flex flex-col">
+    <ResizablePanel
+      id="right"
+      defaultSize={350}
+      minSize={300}
+      className="flex flex-col"
+    >
       <ResizablePanelGroup orientation="vertical">
         {/* Code editor */}
         <ResizablePanel collapsible minSize={30}>
@@ -1080,4 +1083,3 @@ function LessonNavItem({
     </Link>
   );
 }
-
