@@ -40,10 +40,10 @@ import type {
   Review,
 } from "@workspace/sanity-client";
 
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery} from "@tanstack/react-query";
 import { courseQueries, progressQueries } from "@/lib/queries/";
 import { useCourse } from "@/hooks/use-course";
-import { PortableTextRenderer } from "../markdown.js";
+import { PortableTextRenderer } from "../markdown";
 import { getCurrentUserId } from "@/hooks/auth";
 
 type IProps = {

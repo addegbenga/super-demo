@@ -29,8 +29,8 @@ import {
 import { Progress } from "@workspace/ui/components/progress";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { cn } from "@workspace/ui/lib/utils";
-import { PortableTextRenderer } from "../markdown.js";
-import { MonacoEditor } from "../monaco-editor.js";
+import { PortableTextRenderer } from "../markdown";
+import { MonacoEditor } from "../monaco-editor";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
