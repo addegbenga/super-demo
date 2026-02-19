@@ -8,6 +8,7 @@ import { AuthModal } from "@/components/auth-modal";
 interface AuthContextType {
   showAuthModal: () => void;
   hideAuthModal: () => void;
+  isConnected?: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,43 +28,36 @@ interface AuthProviderProps {
 
 export function AuthProvider({
   children,
-  protectedRoutes = ["/", "/course","/profile","/leaderboard"],
+  protectedRoutes = ["/profile", "/certificates", "/leaderboard"],
 }: AuthProviderProps) {
   const { connected } = useWallet();
   const pathname = usePathname();
   const [showModal, setShowModal] = useState(false);
-  const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
-  // Check if current route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname?.startsWith(route),
   );
 
+  // Auto-block protected routes
   useEffect(() => {
-    // Only check after initial render
-    if (!hasCheckedAuth) {
-      setHasCheckedAuth(true);
-      return;
-    }
-
-    // Show modal if on protected route and not connected
     if (isProtectedRoute && !connected) {
       setShowModal(true);
     }
-  }, [connected, isProtectedRoute, hasCheckedAuth]);
-
-  const showAuthModal = () => setShowModal(true);
-  const hideAuthModal = () => setShowModal(false);
+  }, [connected, isProtectedRoute]);
 
   return (
-    <AuthContext.Provider value={{ showAuthModal, hideAuthModal }}>
+    <AuthContext.Provider
+      value={{
+        showAuthModal: () => setShowModal(true),
+        hideAuthModal: () => setShowModal(false),
+        isConnected: connected,
+      }}
+    >
       {children}
-
-      {/* Auth Modal - blocks access to protected routes */}
       <AuthModal
-        open={showModal && isProtectedRoute && !connected}
+        open={showModal}
         onOpenChange={setShowModal}
-        allowClose={false} // Cannot close without connecting on protected routes
+        allowClose={!isProtectedRoute}
       />
     </AuthContext.Provider>
   );

@@ -3,7 +3,12 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useEffect, useState } from "react";
 import { Loader2, ChevronRight, Download } from "lucide-react";
-import { Dialog, DialogContent } from "@workspace/ui/components/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
+import Link from "next/link";
 
 interface AuthModalProps {
   open: boolean;
@@ -66,12 +71,12 @@ const WALLET_INFO = [
             y2="42.0564"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0.02" stop-color="#0000FF"></stop>
-            <stop offset="0.08" stop-color="#0094FF"></stop>
-            <stop offset="0.16" stop-color="#48FF91"></stop>
-            <stop offset="0.42" stop-color="#0094FF"></stop>
-            <stop offset="0.68" stop-color="#0038FF"></stop>
-            <stop offset="0.9" stop-color="#0500FF"></stop>
+            <stop offset="0.02" stopColor="#0000FF"></stop>
+            <stop offset="0.08" stopColor="#0094FF"></stop>
+            <stop offset="0.16" stopColor="#48FF91"></stop>
+            <stop offset="0.42" stopColor="#0094FF"></stop>
+            <stop offset="0.68" stopColor="#0038FF"></stop>
+            <stop offset="0.9" stopColor="#0500FF"></stop>
           </linearGradient>
         </defs>
       </svg>
@@ -82,14 +87,14 @@ const WALLET_INFO = [
     name: "Coinbase Wallet",
     icon: (
       <svg
-   width={25}
+        width={25}
         height={25}
         viewBox="0 0 1024 1024"
         xmlns="http://www.w3.org/2000/svg"
       >
         <circle fill="#0052ff" cx="512" cy="512" r="512" />
         <path
-        fill="white"
+          fill="white"
           d="M516.3 361.83c60.28 0 108.1 37.18 126.26 92.47H764C742 336.09 644.47 256 517.27 256 372.82 256 260 365.65 260 512.49S370 768 517.27 768c124.35 0 223.82-80.09 245.84-199.28H642.55c-17.22 55.3-65 93.45-125.32 93.45-83.23 0-141.56-63.89-141.56-149.68.04-86.77 57.43-150.66 140.63-150.66z"
         />
       </svg>
@@ -161,9 +166,8 @@ export function AuthModal({
       <DialogContent
         showCloseButton={false}
         className="sm:max-w-sm p-0 gap-0 overflow-hidden"
-        onPointerDownOutside={(e) => !allowClose && e.preventDefault()}
-        onEscapeKeyDown={(e) => !allowClose && e.preventDefault()}
       >
+        <DialogTitle>{""}</DialogTitle>
         {/* Header with Logo */}
         <div className="flex flex-col items-center pt-12 pb-8 px-6">
           <svg
@@ -287,13 +291,13 @@ export function AuthModal({
           <p className="text-xs tracking-tight text-muted-foreground text-center leading-relaxed">
             By connecting your wallet and using Superteam Academy, you agree to
             our{" "}
-            <a href="/terms" className="text-primary hover:underline">
+            <Link href="/terms" className="text-primary hover:underline">
               Terms of Service
-            </a>{" "}
+            </Link>{" "}
             &{" "}
-            <a href="/privacy" className="text-primary hover:underline">
+            <Link href="/privacy" className="text-primary hover:underline">
               Privacy Policy
-            </a>
+            </Link>
             .
           </p>
         </div>

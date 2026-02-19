@@ -294,7 +294,8 @@ export default function DashboardHome() {
       {/* ── Header ── */}
       <div className="pb-3">
         <h1 className="text-3xl tracking-tighter font-bold mb-1">
-          Welcome back, Dev 👋
+          {/* Welcome back, Dev 👋 */}
+          Welcome back 👋
         </h1>
         <p className="text-sm tracking-tight text-muted-foreground">
           {streak > 0

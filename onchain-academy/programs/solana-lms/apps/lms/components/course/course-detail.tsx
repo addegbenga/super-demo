@@ -157,7 +157,7 @@ function CourseHero({ courseId, data }: IProps) {
                 ? "Loading..."
                 : progress?.data?.enrolled
                   ? " Continue learning "
-                  : "Start learning now"}
+                  : "Enroll now"}
             </Button>
 
             {/* </Link> */}

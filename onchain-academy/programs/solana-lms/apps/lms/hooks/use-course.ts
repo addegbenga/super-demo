@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { courseQueries, progressQueries, queryKeys } from "@/lib/queries";
 import { completeCourse, completeLesson, enrollInCourse } from "@/lib/actions";
 import { getCurrentUserId } from "./auth";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export type CourseProgressItem = {
   progress: {
@@ -45,8 +46,9 @@ export type CourseProgressItem = {
 export type CourseProgressResponse = CourseProgressItem[];
 
 export function useCourse(slug: string) {
+  const { showAuthModal, isConnected } = useAuth();
   const queryClient = useQueryClient();
-  const {userId} = getCurrentUserId();
+  const { userId } = getCurrentUserId();
 
   // Fetch course data
   const {
@@ -75,10 +77,11 @@ export function useCourse(slug: string) {
   // Server Action updates Sanity, onSuccess updates localStorage
   const enrollMutation = useMutation({
     mutationFn: async () => {
-      if (!userId || !course) {
-        throw new Error("User and course are required");
+      if (!isConnected) {
+        showAuthModal?.();
+        throw new Error("Not authenticated");
       }
-      return enrollInCourse({ userId, courseId: course._id });
+      return enrollInCourse({ userId, courseId: course?._id as string });
     },
 
     onSuccess: async (result, _variables) => {
@@ -116,12 +119,13 @@ export function useCourse(slug: string) {
       totalLessons: number;
       xpReward: number;
     }) => {
-      if (!userId || !course) {
-        throw new Error("User and course are required");
+      if (!isConnected) {
+        showAuthModal?.();
+        throw new Error("Not authenticated");
       }
       return completeLesson({
         userId,
-        courseId: course._id,
+        courseId: course?._id as string,
         lessonId: variables.lessonId,
       });
     },
@@ -204,7 +208,7 @@ export function useEnrolledCoursesWithDetails(userId: string) {
         }));
 
   return {
-    data:enrolled as unknown as CourseProgressResponse,
+    data: enrolled as unknown as CourseProgressResponse,
     isLoading: enrolledQuery.isLoading || coursesQuery.isLoading,
     isError: enrolledQuery.isError || coursesQuery.isError,
   };

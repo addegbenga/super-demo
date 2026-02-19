@@ -8,12 +8,12 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { cn } from "@workspace/ui/lib/utils";
+import { useAuth } from "./providers/auth-provider";
 
 export function WalletPopover() {
   const { publicKey, disconnect, connected } = useWallet();
-  const { setVisible } = useWalletModal();
+   const { showAuthModal } = useAuth();
   const [copied, setCopied] = useState(false);
 
   const address = publicKey?.toBase58() ?? null;
@@ -28,19 +28,22 @@ export function WalletPopover() {
     setTimeout(() => setCopied(false), 1500);
   };
 
-  // Not connected — open the wallet adapter modal (Phantom, Backpack, etc.)
-  if (!connected || !address) {
-    return (
-      <Button
-        onClick={() => setVisible(true)}
-        size="sm"
-        className="gap-2 h-8 px-4 rounded-full bg-background border border-border font-medium text-xs transition-all"
-      >
-        <Wallet className="w-3.5 h-3.5" />
+ if (!connected || !address) {
+  return (
+    <Button
+      onClick={showAuthModal}
+      className="flex items-center gap-2 h-8 px-3 rounded-full bg-background border border-border transition-all group hover:border-white/20"
+    >
+      <span className="relative flex h-2 w-2">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/40 opacity-75" />
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-white/30" />
+      </span>
+      <span className="text-xs text-white/50 group-hover:text-white/70 transition-colors">
         Connect Wallet
-      </Button>
-    );
-  }
+      </span>
+    </Button>
+  );
+}
 
   return (
     <Popover>
@@ -74,7 +77,7 @@ export function WalletPopover() {
           </div>
           <div className="flex items-center gap-2 mt-2">
             {/* Gradient avatar — unique per wallet via address color */}
-            <div className="w-8 h-8 rounded-full bg-linear-to-br from-violet-500 via-fuchsia-500 to-pink-500 flex-shrink-0" />
+            <div className="w-8 h-8 rounded-full bg-linear-to-br from-violet-500 via-fuchsia-500 to-pink-500 shrink-0" />
             <div className="min-w-0">
               <p className="text-sm font-mono text-white font-medium leading-tight truncate">
                 {shortAddress}
