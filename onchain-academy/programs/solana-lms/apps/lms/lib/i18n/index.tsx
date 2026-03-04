@@ -8,9 +8,13 @@ import {
   useCallback,
   ReactNode,
   JSX,
+  Suspense,
 } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import translations from "./translations.json";
+
+// Opt out of static rendering since we read searchParams at runtime
+export const dynamic = "force-dynamic";
 
 export type Locale = "en" | "es" | "pt" | "id";
 
@@ -46,12 +50,13 @@ function resolveInitialLocale(urlLang: string | null): Locale {
   if (urlLang && urlLang in translations) return urlLang as Locale;
   const stored = localStorage.getItem("locale");
   if (stored && stored in translations) return stored as Locale;
-  const browser = navigator.language.split("-")[0];
-  if (browser!! in translations) return browser as Locale;
+  const browser = navigator.language.split("-")[0] as any;
+  if (browser in translations) return browser as Locale;
   return "en";
 }
 
-export function I18nProvider({ children }: { children: ReactNode }): JSX.Element {
+// Inner component that actually calls useSearchParams — must be inside <Suspense>
+function I18nProviderInner({ children }: { children: ReactNode }): JSX.Element {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -115,6 +120,16 @@ export function I18nProvider({ children }: { children: ReactNode }): JSX.Element
     <I18nContext.Provider value={{ locale, setLocale, t }}>
       {children}
     </I18nContext.Provider>
+  );
+}
+
+// Public provider wraps the inner component in Suspense, satisfying Next.js's
+// requirement that any component calling useSearchParams has a Suspense boundary.
+export function I18nProvider({ children }: { children: ReactNode }): JSX.Element {
+  return (
+    <Suspense fallback={null}>
+      <I18nProviderInner>{children}</I18nProviderInner>
+    </Suspense>
   );
 }
 

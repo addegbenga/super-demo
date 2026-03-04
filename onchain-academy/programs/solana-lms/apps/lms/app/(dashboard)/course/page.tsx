@@ -2,6 +2,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient } from "@/components/providers/query-client";
 import { courseQueries } from "@/lib/queries";
 import { AllCourse } from "@/components/course";
+import { Suspense } from "react";
 
 export default async function CoursePage({
   searchParams,
