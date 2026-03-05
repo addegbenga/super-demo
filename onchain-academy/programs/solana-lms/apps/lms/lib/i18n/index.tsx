@@ -66,6 +66,9 @@ function I18nProviderInner({ children }: { children: ReactNode }): JSX.Element {
     setLocaleState(resolved);
     localStorage.setItem("locale", resolved);
 
+    // Only update URL if language param is missing or mismatched
+    if (urlLang === resolved || (resolved === "en" && !urlLang)) return;
+
     const params = new URLSearchParams(searchParams.toString());
     if (resolved === "en") {
       params.delete("language");
@@ -79,7 +82,7 @@ function I18nProviderInner({ children }: { children: ReactNode }): JSX.Element {
       "",
       queryString ? `${pathname}?${queryString}` : pathname,
     );
-  }, [pathname]);
+  }, [pathname, searchParams]);
 
   const setLocale = useCallback(
     (newLocale: Locale) => {

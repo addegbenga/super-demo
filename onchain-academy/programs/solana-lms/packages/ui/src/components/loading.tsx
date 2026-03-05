@@ -161,3 +161,99 @@ export function LessonContentSkeleton() {
     </div>
   );
 }
+
+
+
+export function HomeCoursesSkeletonLoader() {
+  return (
+    <div className="grid pt-2 gap-3 grid-cols-1 lg:grid-cols-[1fr_minmax(0,24%)]">
+      {/* ── Left Column: My Courses ── */}
+      <div className="grid gap-3">
+        <div className="rounded-2xl border border-white/5 bg-white/2 overflow-hidden max-h-96 flex flex-col">
+          {/* Header */}
+          <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between shrink-0">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-6 w-16" />
+          </div>
+
+          {/* Course list items */}
+          <div className="p-4 space-y-3 overflow-y-auto flex-1">
+            {Array.from({ length: 1 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex gap-4 h-40 rounded-xl border border-white/5 bg-white/2 overflow-hidden"
+              >
+                {/* Thumbnail */}
+                <Skeleton className="w-40 shrink-0 self-stretch rounded-none" />
+
+                {/* Content */}
+                <div className="flex-1 min-w-0 py-3 pr-4 flex flex-col gap-2">
+                  {/* Status badge */}
+                  <Skeleton className="h-2.5 w-16" />
+                  {/* Title */}
+                  <Skeleton className="h-4 w-3/4 mt-1" />
+                  {/* Description */}
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-5/6" />
+                  </div>
+                  {/* Stats */}
+                  <div className="flex items-center gap-3 mt-auto">
+                    <Skeleton className="h-3 w-14" />
+                    <Skeleton className="h-3 w-10" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Browse more button */}
+          <div className="px-4 pb-4">
+            <Skeleton className="h-8 w-full rounded-md" />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right Column: Recently Active Course ── */}
+      <div>
+        <div className="rounded-2xl border border-white/5 bg-white/2 overflow-hidden h-full">
+          <div className="flex flex-col h-full">
+            {/* Big thumbnail header */}
+            <Skeleton className="h-36 w-full rounded-none shrink-0" />
+
+            {/* Course info */}
+            <div className="px-4 py-3 flex flex-col flex-1 gap-2">
+              {/* "Recently Active" label */}
+              <Skeleton className="h-2 w-20" />
+              {/* Title */}
+              <Skeleton className="h-4 w-4/5" />
+
+              {/* Stats row */}
+              <div className="flex items-center gap-4 my-1">
+                <div className="flex flex-col items-center gap-1">
+                  <Skeleton className="h-5 w-8" />
+                  <Skeleton className="h-2 w-6" />
+                </div>
+                <div className="w-px h-6 bg-white/10" />
+                <div className="flex flex-col items-center gap-1">
+                  <Skeleton className="h-5 w-6" />
+                  <Skeleton className="h-2 w-8" />
+                </div>
+                <div className="w-px h-6 bg-white/10" />
+                <div className="flex flex-col items-center gap-1">
+                  <Skeleton className="h-5 w-8" />
+                  <Skeleton className="h-2 w-4" />
+                </div>
+              </div>
+
+              {/* CTA button */}
+              <div className="mt-auto">
+                <Skeleton className="h-8 w-full rounded-md" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -14,6 +14,7 @@ export const queries = {
     language,
     "thumbnail": thumbnail.asset->url,
     tags,
+    i18n,  
     stats,
     "moduleCount": count(modules),
     "lessonCount": count(modules[]->lessons),
@@ -35,6 +36,7 @@ export const queries = {
     track,
     language,
     stats,
+    i18n,  
     _createdAt,
     _updatedAt
   }`,
@@ -53,7 +55,25 @@ export const queries = {
     "thumbnail": thumbnail.asset->url,
     status,
     tags,
+    i18n,  
     stats
+}`,
+
+coursesByi18nIds: `*[_type == "course" && i18n.current in $ids && language == $language] {
+  _id,
+  title,
+  slug,
+  description,
+  difficulty,
+  duration,
+  xpReward,
+  track,
+  language,
+  "thumbnail": thumbnail.asset->url,
+  status,
+  tags,
+  i18n,
+  stats
 }`,
 
   // Get course by slug with full details
@@ -67,6 +87,7 @@ export const queries = {
     difficulty,
     duration,
     xpReward,
+     i18n,  
     track,
     language,
     "thumbnail": thumbnail.asset->url,
@@ -146,6 +167,7 @@ export const queries = {
     duration,
     xpReward,
     track,
+     i18n,  
     language,
     thumbnail,
     status,
@@ -183,6 +205,7 @@ export const queries = {
     title,
     slug,
     description,
+     i18n,  
     difficulty,
     duration,
     xpReward,
@@ -199,6 +222,7 @@ export const queries = {
     title,
     slug,
     description,
+     i18n,  
     difficulty,
     duration,
     xpReward,
@@ -222,6 +246,7 @@ export const queries = {
     thumbnail,
     track,
     tags,
+     i18n,  
     stats
   }`,
 
@@ -246,6 +271,7 @@ export const queries = {
   duration,
   xpReward,
   track,
+   i18n,  
   language,
   "thumbnail": thumbnail.asset->url,
   tags,

@@ -13,6 +13,18 @@ export default defineType({
       readOnly: true,
       hidden: true,
     }),
+    defineField({
+      name: 'i18n',
+      title: 'Translation ID',
+      type: 'slug',
+      // readOnly: true,
+      options: {
+        source: (doc: any) => doc.slug?.current?.replace(/-(?:en|es|pt)$/, '') ?? doc.title,
+        maxLength: 96,
+        isUnique: () => true, // ← always allow, no uniqueness enforced
+      },
+      validation: (Rule) => Rule.required(),
+    }),
 
     defineField({
       name: 'title',

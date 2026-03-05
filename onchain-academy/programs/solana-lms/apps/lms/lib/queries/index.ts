@@ -2,7 +2,6 @@ import { PublicKey } from "@solana/web3.js";
 import { queryOptions } from "@tanstack/react-query";
 import { learningService } from "@workspace/learning-service";
 import { queryBuilder } from "@workspace/sanity-client";
-import { toLocalizedSlug } from "../helper";
 
 export const queryKeys = {
   // Courses
@@ -15,6 +14,8 @@ export const queryKeys = {
     stats: (courseId: string) =>
       [...queryKeys.courses.all, "stats", courseId] as const,
     byIds: (ids: string[]) => ["courses", "byIds", ...ids.sort()] as const,
+  byI18nIds: (userId: string, ids: string[], lang?: string) =>
+  ["courses", "byI18nIds", userId, lang, ...ids.sort()] as const,
     search: (language: string, query: string, filters: any) =>
       [...queryKeys.courses.all, "search", language, query, filters] as const,
   },
@@ -72,7 +73,7 @@ export const courseQueries = {
   bySlug: (slug: string, language?: any) =>
     queryOptions({
       queryKey: queryKeys.courses.detail(slug, language),
-      queryFn: () => queryBuilder.getCourseBySlug(toLocalizedSlug(slug, language), language),
+      queryFn: () => queryBuilder.getCourseBySlug(slug, language),
       staleTime: staleTime,
     }),
   byIds: (ids: string[], language?: any) =>
@@ -80,6 +81,14 @@ export const courseQueries = {
       queryKey: queryKeys.courses.byIds(ids),
       queryFn: () => queryBuilder.getCourseByIds(ids, language),
       enabled: ids.length > 0,
+      staleTime: staleTime,
+    }),
+
+  byI18nIds: (userId:string,ids: string[], language?: any, ) =>
+    queryOptions({
+      queryKey: queryKeys.courses.byI18nIds(userId,ids, language),
+      queryFn: () => queryBuilder.getCourseByI18nIds(ids, language),
+      enabled: ids.length > 0 && !!userId,
       staleTime: staleTime,
     }),
 
@@ -104,7 +113,7 @@ export const lessonQueries = {
   bySlug: (slug: string, language?: string) =>
     queryOptions({
       queryKey: queryKeys.lessons.detail(slug, language),
-      queryFn: () => queryBuilder.getLessonBySlug(toLocalizedSlug(slug, language), language as any),
+      queryFn: () => queryBuilder.getLessonBySlug(slug, language as any),
       staleTime: staleTime,
     }),
 
@@ -129,7 +138,8 @@ export const progressQueries = {
   course: (userId: string, courseId: string) =>
     queryOptions({
       queryKey: queryKeys.progress.course(userId, courseId),
-      queryFn: () => learningService.getProgress({ userId, courseId }),
+      queryFn: () =>
+        learningService.getProgress({ userId, courseId: courseId }),
       enabled: !!userId && !!courseId,
       staleTime: 0, // Always fresh - progress changes frequently
     }),

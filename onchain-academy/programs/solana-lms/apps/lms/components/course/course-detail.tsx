@@ -59,7 +59,7 @@ function CourseHero({ courseId, data }: IProps) {
   const navigation = useRouter();
   const { enroll } = useCourse(courseId as string);
   const progress = useQuery(
-    progressQueries.course(userId, data?._id as string),
+    progressQueries.course(userId, data.i18n?.current as string),
   );
   const { t } = useI18n();
 
@@ -476,16 +476,16 @@ function CourseSidebar({ data }: IProps) {
 export default function CourseDetail() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const courseId = params.courseId as string;
+  const courseSlug = params.courseId as string;
   const language = searchParams.get("language") as string;
-  const data = useSuspenseQuery(courseQueries.bySlug(courseId, language));
+  const data = useSuspenseQuery(courseQueries.bySlug(courseSlug, language));
 
   return (
     <div className="bg-background container mx-auto max-w-6xl pt-12 px-4 pb-24">
       {/* Course Hero Section */}
       <CourseHero
         data={data.data as Course}
-        courseId={params.courseId as string}
+        courseId={courseSlug as string}
       />
 
       {/* Content Tabs / Main Layout */}

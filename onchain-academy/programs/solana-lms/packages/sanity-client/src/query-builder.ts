@@ -11,6 +11,13 @@ import type {
 } from "./types.gen";
 import { publicClient } from "./client";
 
+const toLocalizedSlug = (slug: string, language?: string) => {
+  // Always strip existing suffix first
+  const base = slug.replace(/-(?:en|es|pt)$/, "");
+  if (!language || language === "en") return base;
+  return `${base}-${language}`;
+};
+
 type QueryParams = {
   language?: SupportedLanguage;
   slug?: string;
@@ -120,7 +127,10 @@ export class QueryBuilder {
     slug: string,
     language?: SupportedLanguage,
   ): Promise<Course> {
-    return this.execute<Course>("courseBySlug", { slug, language });
+    return this.execute<Course>("courseBySlug", {
+      slug: toLocalizedSlug(slug, language),
+      language,
+    });
   }
 
   async getCourseByIds(
@@ -128,6 +138,13 @@ export class QueryBuilder {
     language?: SupportedLanguage,
   ): Promise<Course> {
     return this.execute<Course>("coursesByIds", { ids, language });
+  }
+
+  async getCourseByI18nIds(
+    ids: string[],
+    language?: SupportedLanguage,
+  ): Promise<Course> {
+    return this.execute<Course>("coursesByi18nIds", { ids, language });
   }
 
   async getCourseBySlugFallback(slug: string): Promise<Course> {
@@ -228,7 +245,10 @@ export class QueryBuilder {
     slug: string,
     language?: SupportedLanguage,
   ): Promise<Lesson> {
-    return this.execute<Lesson>("lessonBySlug", { slug, language });
+    return this.execute<Lesson>("lessonBySlug", {
+      slug: toLocalizedSlug(slug, language),
+      language,
+    });
   }
 
   async getLessonBySlugFallback(slug: string): Promise<Lesson> {

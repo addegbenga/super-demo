@@ -345,6 +345,9 @@ export type Course = {
       _key: string;
     } & InstructorReference
   >;
+  i18n:{
+    current:any;
+  };
   status?: "draft" | "published" | "archived";
   tags?: Array<string>;
   prerequisites?: Array<

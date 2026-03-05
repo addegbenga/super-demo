@@ -33,11 +33,13 @@ export async function POST(request: NextRequest) {
 
       // Get total lessons in course
       const course = await serverClient.fetch(
-        `*[_type == "course" && _id == $courseId][0] {
+        `*[_type == "course" && i18n.current == $courseId][0] {
           "totalLessons": count(modules[]->lessons)
         }`,
         { courseId }
       )
+
+      console.log(course,"coursw")
 
       const completionPercentage = Math.round(
         (completedLessons.length / course.totalLessons) * 100

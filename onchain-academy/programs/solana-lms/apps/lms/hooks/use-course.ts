@@ -26,6 +26,7 @@ export type CourseProgressItem = {
     difficulty: "beginner" | "intermediate" | "advanced" | string;
     duration: number;
     language: string;
+    i18n: any;
     slug: {
       _type: "slug";
       current: string;
@@ -67,10 +68,17 @@ export function useCourse(slug: string) {
     isLoading: progressLoading,
     error: progressError,
   } = useQuery({
-    queryKey: queryKeys.progress.course(userId, course?._id || ""),
+    queryKey: queryKeys.progress.course(
+      userId,
+
+      course?.i18n.current || "",
+    ),
     queryFn: () =>
-      learningService.getProgress({ userId, courseId: course!._id }),
-    enabled: !!userId && !!course?._id,
+      learningService.getProgress({
+        userId,
+        courseId: course?.i18n.current,
+      }),
+    enabled: !!userId && !!course?.i18n.current,
   });
 
   // Enrollment mutation
@@ -81,7 +89,10 @@ export function useCourse(slug: string) {
         showAuthModal?.();
         throw new Error("Not authenticated");
       }
-      return enrollInCourse({ userId, courseId: course?._id as string });
+      return enrollInCourse({
+        userId,
+        courseId: course?.i18n.current as string,
+      });
     },
 
     onSuccess: async (result, _variables) => {
@@ -93,11 +104,16 @@ export function useCourse(slug: string) {
       // Client-side: save initial progress to localStorage
       await learningService.enrollInCourse({
         userId,
-        courseId: course!._id,
+
+        courseId: course?.i18n.current,
       });
 
       queryClient.invalidateQueries({
-        queryKey: queryKeys.progress.course(userId, course!._id),
+        queryKey: queryKeys.progress.course(
+          userId,
+
+          course!.i18n.current,
+        ),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.courses.detail(slug),
@@ -125,7 +141,7 @@ export function useCourse(slug: string) {
       }
       return completeLesson({
         userId,
-        courseId: course?._id as string,
+        courseId: course?.i18n.current as string,
         lessonId: variables.lessonId,
       });
     },
@@ -139,7 +155,7 @@ export function useCourse(slug: string) {
       // Client-side: update localStorage, XP, streak, achievements
       const lessonResult = await learningService.completeLesson({
         userId,
-        courseId: course!._id,
+        courseId: course!.i18n.current,
         lessonId: variables.lessonId,
         totalLessons: variables.totalLessons,
         xpReward: variables.xpReward,
@@ -147,11 +163,15 @@ export function useCourse(slug: string) {
 
       // If course is now complete, update Sanity via Server Action
       if (lessonResult.courseCompleted) {
-        await completeCourse({ userId, courseId: course!._id });
+        await completeCourse({ userId, courseId: course!.i18n.current });
       }
 
       queryClient.invalidateQueries({
-        queryKey: queryKeys.progress.course(userId, course!._id),
+        queryKey: queryKeys.progress.course(
+          userId,
+
+          course!.i18n.current,
+        ),
       });
 
       toast.success(`Lesson complete. +${lessonResult.xpAwarded} XP earned`);
@@ -188,13 +208,17 @@ export function useCourse(slug: string) {
   };
 }
 
-export function useEnrolledCoursesWithDetails(userId: string) {
+export function useEnrolledCoursesWithDetails(
+  userId: string,
+  language: string,
+) {
   const enrolledQuery = useQuery(progressQueries.enrolled(userId));
 
   const courseIds = enrolledQuery.data?.map((p) => p.courseId) ?? [];
 
-  const coursesQuery = useQuery(courseQueries.byIds(courseIds));
-
+  const coursesQuery = useQuery(
+    courseQueries.byI18nIds(userId, courseIds, language),
+  );
   const enrolledData = enrolledQuery.data;
   const coursesData = coursesQuery.data as any;
 
@@ -204,12 +228,15 @@ export function useEnrolledCoursesWithDetails(userId: string) {
       : enrolledData.map((progress) => ({
           progress,
           course:
-            coursesData.find((c: any) => c._id === progress.courseId) ?? null,
+            coursesData.find(
+              (c: any) => c.i18n.current === progress.courseId,
+            ) ?? null,
         }));
 
   return {
     data: enrolled as unknown as CourseProgressResponse,
-    isLoading: enrolledQuery.isPending || coursesQuery.isPending,
+    isLoading: (!!userId && enrolledQuery.isPending) || coursesQuery.isLoading,
+    isPending:coursesQuery.isPending || enrolledQuery.isPending,
     isError: enrolledQuery.isError || coursesQuery.isError,
   };
 }

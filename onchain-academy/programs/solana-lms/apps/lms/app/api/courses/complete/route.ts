@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Update course stats
     const currentStats = await serverClient.fetch(
-      `*[_type == "course" && _id == $courseId][0].stats`,
+      `*[_type == "course" && i18n.current == $courseId][0].stats`,
       { courseId }
     )
 

@@ -105,7 +105,7 @@ export default function Course() {
 
   const { data: course } = useQuery(courseQueries.bySlug(courseSlug, language));
   const { data: progress } = useQuery(
-    progressQueries.course(userId, course?._id as string),
+    progressQueries.course(userId, course?.i18n?.current as string),
   );
   const { data: lesson } = useQuery(lessonQueries.bySlug(lessonSlug, language));
 
@@ -186,7 +186,7 @@ export default function Course() {
           onNext={handleNext}
         />
 
-        {(showCodeEditor || !hasCodeChallenge) && (
+        {hasCodeChallenge && showCodeEditor && (
           <>
             <ResizableHandle className="bg-white/5 hover:bg-primary/50 transition-colors w-1" />
             <EditorPanel lessonSlug={lessonSlug} language={language} />
